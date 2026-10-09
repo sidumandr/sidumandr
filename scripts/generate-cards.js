@@ -162,8 +162,8 @@ async function fetchData() {
 (async () => {
   const data = process.env.MOCK
     ? {
-        stats: { stars: 1, commits: 73, prs: 0, issues: 0, repos: 12, contributed: 1 },
-        langs: [["JavaScript", 86.07], ["TypeScript", 6.45], ["HTML", 2.58], ["C#", 2.53], ["CSS", 1.62], ["Python", 0.76]]
+        stats: { stars: 1, commits: 73, prs: 24, issues: 0, repos: 81, contributed: 1 },
+        langs: [["JavaScript", 6.45], ["TypeScript", 86.07], ["C#", 2.58], ["CSS", 2.53], ["Python", 1.62], ["HTML", 0.76]]
           .map(([name, pct], i) => ({ name, pct, color: PALETTE[i] })),
       }
     : await fetchData();
