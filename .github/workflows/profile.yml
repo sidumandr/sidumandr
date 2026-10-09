@@ -1,0 +1,37 @@
+name: Update profile cards
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"   # 12 saatte bir güncelle
+  workflow_dispatch:          # elle çalıştırılabilsin
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # İstatistik + dil kartları
+      - run: npm install --no-save @fontsource/inter@5.3.0
+      - run: node scripts/generate-cards.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.repository_owner }}
+          OUT_DIR: dist
+
+      # Hepsini "output" branch'ine yayınla
+      - uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
