@@ -15,4 +15,4 @@ test('PR counts use direct connections and include all pages',async()=>{
  assert.equal(d.prs.authored,3);assert.equal(d.prs.external,1);assert.equal(d.prs.open+d.prs.merged+d.prs.closed,3);assert.equal(pages,2);assert.equal(d.stats.totalPullRequestContributions,2);
 });
 test('invalid cursor fails instead of truncating data',async()=>{await assert.rejects(()=>paginate(async()=>({nodes:[],pageInfo:{hasNextPage:true,endCursor:null}})),/cursor/);});
-test('main SVG renders the exact authored count',()=>{const d=mock();d.prs.authored=1234;assert.ok(render(d)['github-stats.svg'].includes('>1,234</text>'));});
+test('manual profile PR value survives API updates',()=>{const d=mock();d.prs.authored=1234;assert.ok(render(d)['github-stats.svg'].includes('>24</text>'));});
