@@ -111,20 +111,27 @@ ${legend}`;
 }
 
 async function fetchData() {
-  const query = `query($login:String!){user(login:$login){
+  const query = `query($login:String!,$prq:String!){user(login:$login){
     repositories(ownerAffiliations:OWNER,isFork:false,first:100){totalCount nodes{stargazerCount
       languages(first:10,orderBy:{field:SIZE,direction:DESC}){edges{size node{name}}}}}
     pullRequests{totalCount} issues{totalCount}
-    contributionsCollection{totalCommitContributions}
-    repositoriesContributedTo(first:1,contributionTypes:[COMMIT,ISSUE,PULL_REQUEST,REPOSITORY]){totalCount}}}`;
+    contributionsCollection{totalCommitContributions totalPullRequestContributions restrictedContributionsCount}
+    repositoriesContributedTo(first:1,contributionTypes:[COMMIT,ISSUE,PULL_REQUEST,REPOSITORY]){totalCount}}
+    viewer{login}
+    prSearch:search(query:$prq,type:ISSUE,first:1){issueCount}}`;
   const res = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: { Authorization: `bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ query, variables: { login: USERNAME } }),
+    body: JSON.stringify({ query, variables: { login: USERNAME, prq: `author:${USERNAME} is:pr` } }),
   });
   const json = await res.json();
   if (json.errors || !json.data) throw new Error(JSON.stringify(json.errors || json));
   const u = json.data.user;
+  const cc = u.contributionsCollection;
+  console.log("Token sahibi:", json.data.viewer.login);
+  console.log("PR (profil):", u.pullRequests.totalCount, "| PR (arama):", json.data.prSearch.issueCount,
+    "| PR katkısı (son 1 yıl):", cc.totalPullRequestContributions);
+  console.log("Commit (son 1 yıl):", cc.totalCommitContributions, "| Gizli kalan katkılar:", cc.restrictedContributionsCount);
 
   const sizes = {};
   for (const r of u.repositories.nodes)
@@ -139,7 +146,7 @@ async function fetchData() {
     stats: {
       stars: u.repositories.nodes.reduce((a, r) => a + r.stargazerCount, 0),
       commits: u.contributionsCollection.totalCommitContributions,
-      prs: u.pullRequests.totalCount,
+      prs: Math.max(u.pullRequests.totalCount, json.data.prSearch.issueCount),
       issues: u.issues.totalCount,
       repos: u.repositories.totalCount,
       contributed: u.repositoriesContributedTo.totalCount,
