@@ -1,7 +1,7 @@
 <!-- GitHub Stats + En çok kullanılan diller -->
 <div align="center">
-  <img height="150" src="https://github-readme-stats.vercel.app/api?username=sidumandr&show_icons=true&bg_color=0d1117&title_color=e6edf3&text_color=c9d1d9&border_color=30363d&hide_border=false&icon_color=8b949e&ring_color=e6edf3" />
-  <img height="150" src="https://github-readme-stats.vercel.app/api/top-langs/?username=sidumandr&layout=compact&langs_count=6&bg_color=0d1117&title_color=e6edf3&text_color=c9d1d9&border_color=30363d&hide_border=false" />
+  <img height="170" alt="GitHub Stats" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-stats.svg" />
+  <img height="170" alt="Most Used Languages" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/top-langs.svg" />
 </div>
 
 <br />
@@ -36,14 +36,3 @@
 </div>
 
 <br />
-
-<!-- Snake animasyonu -->
-<div align="center">
-  <img width="100%" alt="snake" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-contribution-grid-snake-dark.svg" />
-</div>
-
-<!-- Spotify: linkini aldıktan sonra yorum işaretlerini kaldır ve SPOTIFY_LINKIN kısmını değiştir
-<div align="center">
-  <img src="SPOTIFY_LINKIN" alt="Spotify" />
-</div>
--->
