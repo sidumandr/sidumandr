@@ -24,9 +24,17 @@ jobs:
       - run: npm install --no-save @fontsource/inter@5.3.0
       - run: node scripts/generate-cards.js
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Private repoları da görebilmesi için kişisel token (PROFILE_TOKEN secret'ı)
+          GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN }}
           USERNAME: ${{ github.repository_owner }}
           OUT_DIR: dist
+
+      # Yılan animasyonu
+      - uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
 
       # Hepsini "output" branch'ine yayınla
       - uses: crazy-max/ghaction-github-pages@v4
