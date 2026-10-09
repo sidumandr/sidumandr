@@ -1,37 +1,31 @@
-<p align="center">
-  <img src="https://komarev.com/ghpvc/?username=sidumandr&label=Profil%20görüntülenme&color=0e75b6&style=flat" alt="profile views" />
-</p>
+<!-- GitHub Stats + En çok kullanılan diller -->
+<div align="center">
+  <img height="150" src="https://github-readme-stats.vercel.app/api?username=sidumandr&show_icons=true&include_all_commits=true&count_private=true&hide_border=false&bg_color=1a1d23&title_color=f0547a&text_color=e6edf3&icon_color=e6edf3&ring_color=f0547a&border_color=6e7681" />
+  <img height="150" src="https://github-readme-stats.vercel.app/api/top-langs/?username=sidumandr&layout=compact&langs_count=6&hide_border=false&bg_color=1a1d23&title_color=f0547a&text_color=e6edf3&border_color=6e7681" />
+</div>
 
-<!-- İstatistikler + En çok kullanılan diller -->
-<p align="center">
-  <img height="170" src="https://github-readme-stats.vercel.app/api?username=sidumandr&show_icons=true&theme=radical&hide_border=false&include_all_commits=true&count_private=true" />
-  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=sidumandr&layout=compact&theme=radical&langs_count=6" />
-</p>
+<!-- Teknolojiler -->
+<div align="center">
+  <img height="40" src="https://skillicons.dev/icons?i=js,ts,react,nextjs,tailwind,nestjs,dotnet,cs,django,python,fastapi,postgres,prisma,redis,docker,githubactions,electron&perline=17" />
+</div>
 
-<!-- Teknolojiler (istediğini ekle/çıkar: https://skillicons.dev) -->
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=js,ts,react,nextjs,tailwind,nestjs,dotnet,cs,django,python,fastapi&perline=11" />
-  <br />
-  <img src="https://skillicons.dev/icons?i=postgres,prisma,redis,docker,githubactions,electron&perline=6" />
-</p>
+<br />
 
 <!-- Sosyal medya -->
-<p align="center">
-  <a href="https://www.linkedin.com/in/safa-ilhan-duman-5796b6256/"><img src="https://skillicons.dev/icons?i=linkedin" /></a>
-  <a href="https://github.com/sidumandr"><img src="https://skillicons.dev/icons?i=github" /></a>
-</p>
+<div align="center">
+  <a href="https://www.linkedin.com/in/safa-ilhan-duman-5796b6256/" target="_blank"><img height="40" src="https://skillicons.dev/icons?i=linkedin" /></a>
+  <a href="https://github.com/sidumandr" target="_blank"><img height="40" src="https://skillicons.dev/icons?i=github" /></a>
+</div>
 
-<!-- Snake animasyonu (.github/workflows/snake.yml dosyası gerekir) -->
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-contribution-grid-snake-dark.svg" />
-    <img alt="snake" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-contribution-grid-snake.svg" />
-  </picture>
-</p>
+<br />
 
-<!-- Spotify: https://github.com/novatorem/novatorem adımlarıyla kendi linkini oluştur -->
-<p align="center">
-  <a href="https://open.spotify.com/user/SPOTIFY_KULLANICI_ADIN">
-    <img src="SPOTIFY_WIDGET_LINKIN" alt="Spotify" />
-  </a>
-</p>
+<!-- Snake animasyonu -->
+<div align="center">
+  <img width="100%" alt="snake" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-contribution-grid-snake-dark.svg" />
+</div>
+
+<!-- Spotify: linkini aldıktan sonra aşağıdaki yorum işaretlerini kaldır ve SPOTIFY_LINKIN kısmını değiştir
+<div align="center">
+  <img src="SPOTIFY_LINKIN" alt="Spotify" />
+</div>
+-->
