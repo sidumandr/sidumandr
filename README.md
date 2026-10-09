@@ -32,7 +32,6 @@
 <!-- Sosyal medya -->
 <div align="center">
   <a href="https://www.linkedin.com/in/safa-ilhan-duman-5796b6256/" target="_blank"><img height="36" alt="LinkedIn" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/linkedin/linkedin-original.svg" /></a>&nbsp;&nbsp;
-  <a href="https://github.com/sidumandr" target="_blank"><img height="36" alt="GitHub" src="https://cdn.simpleicons.org/github/white" /></a>
 </div>
 
 <br />
