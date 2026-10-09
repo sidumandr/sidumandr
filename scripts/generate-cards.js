@@ -2,6 +2,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const USERNAME = process.env.PROFILE_USERNAME || 'sidumandr';
 const OUT = process.env.OUT_DIR || 'dist';
+// User-selected manual PR count for the main profile card.
+const PROFILE_PR_COUNT = 24;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
 const number = n => Number(n).toLocaleString('en-US');
 const PAGE = 'pageInfo{hasNextPage endCursor}';
@@ -59,7 +61,7 @@ function frame(title,subtitle,body,d,w=440,h=190){return `<svg xmlns="http://www
 function grid(items){return items.map(([label,value],i)=>{const x=24+i%3*132,y=89+Math.floor(i/3)*57;return text(x,y,number(value),'value')+text(x,y+19,label);}).join('');}
 function render(d){
  const s=d.stats,p=d.prs;
- const stats=frame('GitHub Stats','Commits: last 12 months',grid([['Stars',s.stars],['Yearly Commits',s.totalCommitContributions],['PRs Authored',p.authored],['Issues Authored',s.issues],['Repositories',s.repos],['Contributed to',s.contributed]]),d);
+ const stats=frame('GitHub Stats','Commits: last 12 months; PR count manually set to 24',grid([['Stars',s.stars],['Yearly Commits',s.totalCommitContributions],['Pull Requests',PROFILE_PR_COUNT],['Issues Authored',s.issues],['Repositories',s.repos],['Contributed to',s.contributed]]),d);
  const prs=frame('Pull Requests','Lifetime · authored PRs',grid([['Authored',p.authored],['Open',p.open],['Merged',p.merged],['Closed · unmerged',p.closed],['External authored',p.external],['In owned repos³',p.owned.total]]),d);
  const activity=frame('Contributions','Last 12 months',grid([['Commits',s.totalCommitContributions],['PR contributions',s.totalPullRequestContributions],['PR reviews',s.totalPullRequestReviewContributions],['Issue contributions',s.totalIssueContributions],['External repos¹',s.contributed],['Restricted²',s.restrictedContributionsCount]]),d);
  const palette=['#6366f1','#22d3ee','#34d399','#fbbf24','#a78bfa','#94a3b8'];
