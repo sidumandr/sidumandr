@@ -12,7 +12,7 @@
   <img height="36" alt="TypeScript" title="TypeScript" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/typescript/typescript-original.svg" />&nbsp;
   <img height="36" alt="React" title="React" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/react/react-original.svg" />&nbsp;
   <img height="36" alt="Next.js" title="Next.js" src="https://cdn.simpleicons.org/nextdotjs/white" />&nbsp;
-  <img height="36" alt="shadcn/ui" title="shadcn/ui" src="https://cdn.simpleicons.org/shadcnui/white" />&nbsp;
+  <img height="36" alt="daisy/ui" title="daisy/ui" src="https://cdn.simpleicons.org/daisyui/white" />&nbsp;
   <img height="36" alt="NestJS" title="NestJS" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/nestjs/nestjs-original.svg" />&nbsp;
   <img height="36" alt=".NET" title=".NET" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/dotnetcore/dotnetcore-original.svg" />&nbsp;
   <img height="36" alt="C#" title="C#" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/csharp/csharp-original.svg" />&nbsp;
@@ -30,8 +30,8 @@
 <br />
 
 <!-- Sosyal medya -->
-<div align="center">
+<!-- <div align="center">
   <a href="https://www.linkedin.com/in/safa-ilhan-duman-5796b6256/" target="_blank"><img height="36" alt="LinkedIn" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/linkedin/linkedin-original.svg" /></a>&nbsp;&nbsp;
 </div>
-
+-->
 <br />
