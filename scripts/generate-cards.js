@@ -1,177 +1,78 @@
-// Modern GitHub istatistik + dil kartları (SVG) üretir.
-// Çalıştırma: GITHUB_TOKEN=... USERNAME=sidumandr node scripts/generate-cards.js
-const fs = require("fs");
-const path = require("path");
-
-const USERNAME = process.env.USERNAME || "sidumandr";
-const TOKEN = process.env.GITHUB_TOKEN;
-const OUT = process.env.OUT_DIR || "dist";
-
-// ---- Tasarım ----
-const C = {
-  bg: "#0d1117",
-  border: "#21262d",
-  title: "#f0f6fc",
-  text: "#c9d1d9",
-  muted: "#7d8590",
-  track: "#161b22",
-};
-// Uyumlu, modern bir palet (dil sırasına göre atanır)
-const PALETTE = ["#6366f1", "#22d3ee", "#34d399", "#fbbf24", "#a78bfa", "#94a3b8"];
-
-function font(weight) {
-  const file = path.join(
-    require.resolve("@fontsource/inter/package.json"),
-    "..",
-    "files",
-    `inter-latin-${weight}-normal.woff2`
-  );
-  const b64 = fs.readFileSync(file).toString("base64");
-  return `@font-face{font-family:'InterCard';font-weight:${weight};src:url(data:font/woff2;base64,${b64}) format('woff2');}`;
-}
-const FONTS = [400, 500, 600].map(font).join("");
-const FAMILY = "'InterCard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
-
-const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const fmt = (n) => (n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k" : String(n));
-
-function frame(w, h, body) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none">
-<style>${FONTS}
-text{font-family:${FAMILY};}
-.t{font-size:15px;font-weight:600;fill:${C.title};letter-spacing:-0.01em}
-.s{font-size:12px;font-weight:400;fill:${C.muted}}
-.v{font-size:22px;font-weight:600;fill:${C.title};letter-spacing:-0.02em}
-.l{font-size:11px;font-weight:500;fill:${C.muted};letter-spacing:0.04em;text-transform:uppercase}
-.n{font-size:12.5px;font-weight:500;fill:${C.text}}
-.p{font-size:12.5px;font-weight:400;fill:${C.muted}}
-.fade{opacity:0;animation:in .5s ease forwards}
-@keyframes in{to{opacity:1}}
-</style>
-<rect x="0.5" y="0.5" width="${w - 1}" height="${h - 1}" rx="12" fill="${C.bg}" stroke="${C.border}"/>
-${body}
-</svg>`;
-}
-
-function statsCard(d) {
-  const W = 440, H = 190;
-  const items = [
-    ["Stars", d.stars],
-    ["Yearly Commits", d.commits],
-    ["Pull Requests", d.prs],
-    ["Issues", d.issues],
-    ["Repositories", d.repos],
-    ["Contributed to", d.contributed],
-  ];
-  const colW = (W - 48) / 3;
-  const cells = items
-    .map(([label, val], i) => {
-      const x = 24 + (i % 3) * colW;
-      const y = 92 + Math.floor(i / 3) * 62;
-      return `<g class="fade" style="animation-delay:${i * 80}ms">
-<text x="${x}" y="${y}" class="v">${fmt(val)}</text>
-<text x="${x}" y="${y + 20}" class="l">${esc(label)}</text></g>`;
-    })
-    .join("\n");
-  const body = `<text x="24" y="36" class="t">GitHub Stats</text>
-<text x="${W - 24}" y="36" class="s" text-anchor="end">@${esc(USERNAME)}</text>
-<line x1="24" y1="52" x2="${W - 24}" y2="52" stroke="${C.border}"/>
-${cells}`;
-  return frame(W, H, body);
-}
-
-function langsCard(langs) {
-  const W = 360, H = 190;
-  const barX = 24, barW = W - 48, barY = 66, gap = 3;
-  const usable = barW - gap * (langs.length - 1);
-  let x = barX;
-  const segs = langs
-    .map((l, i) => {
-      const w = Math.max(usable * (l.pct / 100), 3);
-      const s = `<rect x="${x.toFixed(2)}" y="${barY}" width="${w.toFixed(2)}" height="6" rx="3" fill="${l.color}"/>`;
-      x += w + gap;
-      return s;
-    })
-    .join("");
-  const legend = langs
-    .map((l, i) => {
-      const lx = 24 + (i % 2) * ((W - 48) / 2);
-      const ly = 106 + Math.floor(i / 2) * 26;
-      return `<g class="fade" style="animation-delay:${i * 80}ms">
-<circle cx="${lx + 4}" cy="${ly - 4}" r="4" fill="${l.color}"/>
-<text x="${lx + 16}" y="${ly}" class="n">${esc(l.name)}</text>
-<text x="${lx + (W - 48) / 2 - 16}" y="${ly}" class="p" text-anchor="end">${l.pct.toFixed(1)}%</text></g>`;
-    })
-    .join("\n");
-  const body = `<text x="24" y="36" class="t">Most Used Languages</text>
-<rect x="${barX}" y="${barY}" width="${barW}" height="6" rx="3" fill="${C.track}"/>
-${segs}
-${legend}`;
-  return frame(W, H, body);
-}
-
-async function fetchData() {
-  const query = `query($login:String!,$prOwn:String!,$prExt:String!){user(login:$login){
-    repositories(ownerAffiliations:OWNER,isFork:false,first:100){totalCount nodes{stargazerCount
-      languages(first:10,orderBy:{field:SIZE,direction:DESC}){edges{size node{name}}}}}
-    pullRequests{totalCount} issues{totalCount}
-    contributionsCollection{totalCommitContributions totalPullRequestContributions restrictedContributionsCount}
-    repositoriesContributedTo(first:1,contributionTypes:[COMMIT,ISSUE,PULL_REQUEST,REPOSITORY]){totalCount}}
-    viewer{login}
-    prOwn:search(query:$prOwn,type:ISSUE,first:1){issueCount}
-    prExt:search(query:$prExt,type:ISSUE,first:1){issueCount}}`;
-  const res = await fetch("https://api.github.com/graphql", {
-    method: "POST",
-    headers: { Authorization: `bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ query, variables: {
-      login: USERNAME,
-      prOwn: `is:pr user:${USERNAME}`, // kendi repolarındaki tüm PR'lar (Claude vb. botların açtıkları dahil)
-      prExt: `is:pr author:${USERNAME} -user:${USERNAME}`, // başkalarının repolarına senin açtıkların
-    } }),
-  });
+const fs = require('node:fs');
+const path = require('node:path');
+const USERNAME = process.env.PROFILE_USERNAME || 'sidumandr';
+const OUT = process.env.OUT_DIR || 'dist';
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+const number = n => Number(n).toLocaleString('en-US');
+const PAGE = 'pageInfo{hasNextPage endCursor}';
+async function graphql(query, variables, request = fetch) {
+  if (!process.env.GITHUB_TOKEN) throw new Error('GITHUB_TOKEN required. Configure the PROFILE_TOKEN repository secret.');
+  const res = await request('https://api.github.com/graphql', {method:'POST', headers:{Authorization:`bearer ${process.env.GITHUB_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({query,variables}),signal:AbortSignal.timeout(60000)});
+  if (!res.ok) throw new Error(`GitHub HTTP ${res.status}; check token permissions and rate limits.`);
   const json = await res.json();
-  if (json.errors || !json.data) throw new Error(JSON.stringify(json.errors || json));
-  const u = json.data.user;
-  const cc = u.contributionsCollection;
-  console.log("Token sahibi:", json.data.viewer.login);
-  console.log("PR (kendi repoların):", json.data.prOwn.issueCount, "| PR (başka repolar):", json.data.prExt.issueCount);
-  console.log("Commit (son 1 yıl):", cc.totalCommitContributions, "| Gizli kalan katkılar:", cc.restrictedContributionsCount);
-
-  const sizes = {};
-  for (const r of u.repositories.nodes)
-    for (const e of r.languages.edges) sizes[e.node.name] = (sizes[e.node.name] || 0) + e.size;
-  const total = Object.values(sizes).reduce((a, b) => a + b, 0) || 1;
-  const langs = Object.entries(sizes)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6)
-    .map(([name, size], i) => ({ name, pct: (size / total) * 100, color: PALETTE[i] }));
-
-  return {
-    stats: {
-      stars: u.repositories.nodes.reduce((a, r) => a + r.stargazerCount, 0),
-      commits: u.contributionsCollection.totalCommitContributions,
-      prs: json.data.prOwn.issueCount + json.data.prExt.issueCount,
-      issues: u.issues.totalCount,
-      repos: u.repositories.totalCount,
-      contributed: u.repositoriesContributedTo.totalCount,
-    },
-    langs,
-  };
+  if (json.errors?.length || !json.data) throw new Error(`GitHub: ${(json.errors || []).map(e=>e.message).join('; ') || 'Missing data'}`);
+  return json.data;
 }
+async function paginate(get) {
+  const nodes=[]; let cursor=null;
+  for (;;) {
+    const page=await get(cursor); nodes.push(...page.nodes);
+    if (!page.pageInfo.hasNextPage) return nodes;
+    if (!page.pageInfo.endCursor || page.pageInfo.endCursor===cursor) throw new Error('Invalid pagination cursor');
+    cursor=page.pageInfo.endCursor;
+  }
+}
+function languageTotals(repos) {
+  const sizes=new Map();
+  for (const repo of repos.filter(r=>!r.isFork)) for(const edge of repo.languages.edges) {
+    const old=sizes.get(edge.node.name) || {name:edge.node.name,size:0,color:edge.node.color || '#94a3b8'};
+    old.size+=edge.size; sizes.set(old.name,old);
+  }
+  const all=[...sizes.values()].sort((a,b)=>b.size-a.size || a.name.localeCompare(b.name));
+  const total=all.reduce((s,l)=>s+l.size,0);
+  const top=all.slice(0,5), rest=all.slice(5).reduce((s,l)=>s+l.size,0);
+  if(rest) top.push({name:'Other',size:rest,color:'#94a3b8'});
+  return top.map(l=>({...l,pct:total ? l.size/total*100:0}));
+}
+async function fetchData(api=graphql, now=new Date()) {
+  if (!/^[a-z\d](?:[a-z\d-]{0,38})$/i.test(USERNAME)) throw new Error('Invalid PROFILE_USERNAME');
+  const from=new Date(now); from.setUTCFullYear(from.getUTCFullYear()-1);
+  const base=await api(`query($login:String!,$from:DateTime!,$to:DateTime!){user(login:$login){login followers{totalCount} following{totalCount} contributionsCollection(from:$from,to:$to){totalCommitContributions totalIssueContributions totalPullRequestContributions totalPullRequestReviewContributions restrictedContributionsCount startedAt endedAt} repositoriesContributedTo(first:1,includeUserRepositories:false,contributionTypes:[COMMIT,ISSUE,PULL_REQUEST,PULL_REQUEST_REVIEW]){totalCount}}}`,{login:USERNAME,from:from.toISOString(),to:now.toISOString()});
+  if(!base.user) throw new Error('GitHub user not found');
+  const repos=await paginate(async cursor => (await api(`query($login:String!,$cursor:String){user(login:$login){repositories(first:50,after:$cursor,ownerAffiliations:[OWNER]){nodes{id isFork stargazerCount forkCount languages(first:100){edges{size node{name color}} ${PAGE}} pullRequests(first:1){totalCount} open:pullRequests(first:1,states:[OPEN]){totalCount} merged:pullRequests(first:1,states:[MERGED]){totalCount} closed:pullRequests(first:1,states:[CLOSED]){totalCount}} ${PAGE}}}}`,{login:USERNAME,cursor})).user.repositories);
+  for(const repo of repos) if(repo.languages.pageInfo.hasNextPage) {
+    const more=await paginate(async cursor => { const page=(await api(`query($id:ID!,$cursor:String){node(id:$id){... on Repository{languages(first:100,after:$cursor){nodes{name color} edges{size node{name color}} ${PAGE}}}}}`,{id:repo.id,cursor:cursor || repo.languages.pageInfo.endCursor})).node.languages; return {...page,nodes:page.edges}; });
+    repo.languages.edges.push(...more);
+  }
+  const specs={authored:`is:pr author:${USERNAME}`,external:`is:pr author:${USERNAME} -user:${USERNAME}`,issues:`is:issue author:${USERNAME}`};
+  for(const state of ['open','merged','closed']) specs[state]=`is:pr author:${USERNAME} ${state==='closed'?'is:closed is:unmerged':`is:${state}`}`;
+  const counts=await api(`query{${Object.entries(specs).map(([k,q])=>`${k}:search(type:ISSUE,first:1,query:${JSON.stringify(q)}){issueCount}`).join(' ')}}`,{});
+  const authored=Object.fromEntries(Object.entries(counts).map(([k,v])=>[k,v.issueCount]));
+  if(authored.open+authored.merged+authored.closed!==authored.authored) throw new Error('PR counts changed during collection; retry the workflow.');
+  const owned={total:0,open:0,merged:0,closed:0};
+  for(const r of repos){owned.total+=r.pullRequests.totalCount; for(const k of ['open','merged','closed']) owned[k]+=r[k].totalCount;}
+  return {username:base.user.login,updatedAt:now.toISOString(),scope:'Token-visible data',stats:{stars:repos.filter(r=>!r.isFork).reduce((s,r)=>s+r.stargazerCount,0),repos:repos.length,originals:repos.filter(r=>!r.isFork).length,forks:repos.filter(r=>r.isFork).length,followers:base.user.followers.totalCount,following:base.user.following.totalCount,contributed:base.user.repositoriesContributedTo.totalCount,issues:authored.issues,...base.user.contributionsCollection},prs:{...authored,owned},langs:languageTotals(repos)};
+}
+function text(x,y,value,cls='label',extra=''){return `<text x="${x}" y="${y}" class="${cls}" ${extra}>${esc(value)}</text>`;}
+function frame(title,subtitle,body,d,w=440,h=190){return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="title desc"><title id="title">${esc(title)} — ${esc(d.username)}</title><desc id="desc">${esc(subtitle)}. Updated ${esc(d.updatedAt)}. ${esc(d.scope)}.</desc><style>text{font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif}.title{fill:#f0f6fc;font-size:15px;font-weight:600;letter-spacing:-.2px}.label{fill:#919aa6;font-size:11px}.value{fill:#e6edf3;font-size:23px;font-weight:600;letter-spacing:-.5px}.small{fill:#7d8590;font-size:10px}.name{fill:#c9d1d9;font-size:12px}.user{fill:#919aa6;font-size:11px}</style><rect x=".5" y=".5" width="${w-1}" height="${h-1}" rx="12" fill="#0d1117" stroke="#262d36"/>${text(24,34,title,'title')}${w===440?text(w-24,34,'@'+d.username,'user','text-anchor="end"'):''}<path d="M24 51H${w-24}" stroke="#21262d"/>${body}${d.scope.startsWith('DEMO')?text(w-24,h-10,'DEMO','small','text-anchor="end"'):''}</svg>`;}
+function grid(items){return items.map(([label,value],i)=>{const x=24+i%3*132,y=89+Math.floor(i/3)*57;return text(x,y,number(value),'value')+text(x,y+19,label);}).join('');}
+function render(d){
+ const s=d.stats,p=d.prs;
+ const stats=frame('GitHub Stats','Commits: last 12 months',grid([['Stars',s.stars],['Yearly Commits',s.totalCommitContributions],['PRs Authored',p.authored],['Issues Authored',s.issues],['Repositories',s.repos],['Contributed to',s.contributed]]),d);
+ const prs=frame('Pull Requests','Lifetime · authored PRs',grid([['Authored',p.authored],['Open',p.open],['Merged',p.merged],['Closed · unmerged',p.closed],['External authored',p.external],['In owned repos³',p.owned.total]]),d);
+ const activity=frame('Contributions','Last 12 months',grid([['Commits',s.totalCommitContributions],['PR contributions',s.totalPullRequestContributions],['PR reviews',s.totalPullRequestReviewContributions],['Issue contributions',s.totalIssueContributions],['External repos¹',s.contributed],['Restricted²',s.restrictedContributionsCount]]),d);
+ const palette=['#6366f1','#22d3ee','#34d399','#fbbf24','#a78bfa','#94a3b8'];
+ let x=24;const gap=3,usable=312-gap*Math.max(0,d.langs.length-1);
+ const bar=d.langs.map((l,i)=>{const width=usable*l.pct/100;const r=`<rect x="${x.toFixed(3)}" y="66" width="${width.toFixed(3)}" height="6" rx="3" fill="${palette[i]}"/>`;x+=width+gap;return r;}).join('');
+ const legend=d.langs.map((l,i)=>{const lx=24+i%2*164,ly=103+Math.floor(i/2)*26;const name=l.name.length>13?l.name.slice(0,12)+'…':l.name;return `<g><title>${esc(l.name)}: ${l.pct.toFixed(1)}%</title><circle cx="${lx+4}" cy="${ly-4}" r="3.5" fill="${palette[i]}"/>${text(lx+14,ly,name,'name')}${text(lx+148,ly,l.pct.toFixed(1)+'%','label','text-anchor="end"')}</g>`;}).join('');
+ const langs=frame('Most Used Languages','Code bytes · non-fork repos',`<rect x="24" y="66" width="312" height="6" rx="3" fill="#161b22"/>`+bar+(legend||text(24,104,'No language data available.')),d,360);
+ return {'github-stats.svg':stats,'pull-requests.svg':prs,'activity.svg':activity,'top-langs.svg':langs};
+}
+function mock(){return {username:USERNAME,updatedAt:'2026-10-09T12:00:00.000Z',scope:'DEMO · sample data',stats:{stars:128,repos:112,originals:96,forks:16,followers:42,following:18,issues:21,contributed:8,totalCommitContributions:734,totalPullRequestContributions:56,totalPullRequestReviewContributions:32,totalIssueContributions:14,restrictedContributionsCount:0},prs:{authored:86,open:8,merged:70,closed:8,external:19,owned:{total:124,open:12,merged:104,closed:8}},langs:[{name:'TypeScript',size:860,color:'#3178c6',pct:86},{name:'JavaScript',size:65,color:'#f1e05a',pct:6.5},{name:'C#',size:25,color:'#178600',pct:2.5},{name:'CSS',size:25,color:'#563d7c',pct:2.5},{name:'Python',size:15,color:'#3572A5',pct:1.5},{name:'Other',size:10,color:'#94a3b8',pct:1}]};}
+async function main(){const d=process.env.MOCK==='1'?mock():await fetchData();fs.mkdirSync(OUT,{recursive:true});for(const [name,svg] of Object.entries(render(d)))fs.writeFileSync(path.join(OUT,name),svg);fs.writeFileSync(path.join(OUT,'stats.json'),JSON.stringify(d,null,2));console.log(`Generated cards in ${OUT}${process.env.MOCK==='1'?' (DEMO)':''}`);}
+if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
+module.exports={paginate,languageTotals,render,fetchData,graphql,mock};
 
-(async () => {
-  const data = process.env.MOCK
-    ? {
-        stats: { stars: 5, commits: 73, prs: 24, issues: 0, repos: 81, contributed: 1 },
-        langs: [["JavaScript", 6.45], ["TypeScript", 86.07], ["C#", 2.58], ["CSS", 2.53], ["Python", 1.62], ["HTML", 0.76]]
-          .map(([name, pct], i) => ({ name, pct, color: PALETTE[i] })),
-      }
-    : await fetchData();
-  fs.mkdirSync(OUT, { recursive: true });
-  fs.writeFileSync(path.join(OUT, "github-stats.svg"), statsCard(data.stats));
-  fs.writeFileSync(path.join(OUT, "top-langs.svg"), langsCard(data.langs));
-  console.log("Kartlar üretildi:", OUT);
-})().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+
+
+
