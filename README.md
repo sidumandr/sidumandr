@@ -1,7 +1,7 @@
 <!-- KULLANICI_ADIN yazan her yeri kendi GitHub kullanıcı adınla değiştir -->
 
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=KULLANICI_ADIN&label=Profil%20görüntülenme&color=0e75b6&style=flat" alt="profile views" />
+  <img src="https://komarev.com/ghpvc/?username=sidumandr&label=Profil%20görüntülenme&color=0e75b6&style=flat" alt="profile views" />
 </p>
 
 <!-- İstatistikler + En çok kullanılan diller -->
