@@ -21,12 +21,12 @@ jobs:
           node-version: 24
 
       # İstatistik + dil kartları
-      - run: npm install --no-save @fontsource/inter@5.3.0
+      - run: node --test scripts/generate-cards.test.js
       - run: node scripts/generate-cards.js
         env:
           # Private repoları da görebilmesi için kişisel token (PROFILE_TOKEN secret'ı)
           GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN }}
-          USERNAME: ${{ github.repository_owner }}
+          PROFILE_USERNAME: ${{ github.repository_owner }}
           OUT_DIR: dist
 
       # Yılan animasyonu
@@ -43,3 +43,4 @@ jobs:
           build_dir: dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
