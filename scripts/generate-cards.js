@@ -111,26 +111,30 @@ ${legend}`;
 }
 
 async function fetchData() {
-  const query = `query($login:String!,$prq:String!){user(login:$login){
+  const query = `query($login:String!,$prOwn:String!,$prExt:String!){user(login:$login){
     repositories(ownerAffiliations:OWNER,isFork:false,first:100){totalCount nodes{stargazerCount
       languages(first:10,orderBy:{field:SIZE,direction:DESC}){edges{size node{name}}}}}
     pullRequests{totalCount} issues{totalCount}
     contributionsCollection{totalCommitContributions totalPullRequestContributions restrictedContributionsCount}
     repositoriesContributedTo(first:1,contributionTypes:[COMMIT,ISSUE,PULL_REQUEST,REPOSITORY]){totalCount}}
     viewer{login}
-    prSearch:search(query:$prq,type:ISSUE,first:1){issueCount}}`;
+    prOwn:search(query:$prOwn,type:ISSUE,first:1){issueCount}
+    prExt:search(query:$prExt,type:ISSUE,first:1){issueCount}}`;
   const res = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: { Authorization: `bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ query, variables: { login: USERNAME, prq: `author:${USERNAME} is:pr` } }),
+    body: JSON.stringify({ query, variables: {
+      login: USERNAME,
+      prOwn: `is:pr user:${USERNAME}`, // kendi repolarındaki tüm PR'lar (Claude vb. botların açtıkları dahil)
+      prExt: `is:pr author:${USERNAME} -user:${USERNAME}`, // başkalarının repolarına senin açtıkların
+    } }),
   });
   const json = await res.json();
   if (json.errors || !json.data) throw new Error(JSON.stringify(json.errors || json));
   const u = json.data.user;
   const cc = u.contributionsCollection;
   console.log("Token sahibi:", json.data.viewer.login);
-  console.log("PR (profil):", u.pullRequests.totalCount, "| PR (arama):", json.data.prSearch.issueCount,
-    "| PR katkısı (son 1 yıl):", cc.totalPullRequestContributions);
+  console.log("PR (kendi repoların):", json.data.prOwn.issueCount, "| PR (başka repolar):", json.data.prExt.issueCount);
   console.log("Commit (son 1 yıl):", cc.totalCommitContributions, "| Gizli kalan katkılar:", cc.restrictedContributionsCount);
 
   const sizes = {};
@@ -146,7 +150,7 @@ async function fetchData() {
     stats: {
       stars: u.repositories.nodes.reduce((a, r) => a + r.stargazerCount, 0),
       commits: u.contributionsCollection.totalCommitContributions,
-      prs: Math.max(u.pullRequests.totalCount, json.data.prSearch.issueCount),
+      prs: json.data.prOwn.issueCount + json.data.prExt.issueCount,
       issues: u.issues.totalCount,
       repos: u.repositories.totalCount,
       contributed: u.repositoriesContributedTo.totalCount,
