@@ -1,0 +1,74 @@
+{
+  "username": "sidumandr",
+  "updatedAt": "2026-10-10T03:58:55.822Z",
+  "scope": "Token-visible data",
+  "stats": {
+    "stars": 1,
+    "repos": 82,
+    "originals": 79,
+    "forks": 3,
+    "followers": 3,
+    "following": 8,
+    "contributed": 2,
+    "issues": 0,
+    "totalCommitContributions": 486,
+    "totalIssueContributions": 0,
+    "totalPullRequestContributions": 8,
+    "totalPullRequestReviewContributions": 0,
+    "restrictedContributionsCount": 0,
+    "startedAt": "2025-10-10T03:58:55Z",
+    "endedAt": "2026-10-10T03:58:55Z"
+  },
+  "prs": {
+    "authored": 0,
+    "open": 0,
+    "merged": 0,
+    "closed": 0,
+    "external": 0,
+    "issues": 0,
+    "owned": {
+      "total": 0,
+      "open": 0,
+      "merged": 0,
+      "closed": 0
+    }
+  },
+  "langs": [
+    {
+      "name": "JavaScript",
+      "size": 5436531,
+      "color": "#f1e05a",
+      "pct": 86.04146774685958
+    },
+    {
+      "name": "TypeScript",
+      "size": 406986,
+      "color": "#3178c6",
+      "pct": 6.44117964055082
+    },
+    {
+      "name": "HTML",
+      "size": 162809,
+      "color": "#e34c26",
+      "pct": 2.576702923683956
+    },
+    {
+      "name": "C#",
+      "size": 160054,
+      "color": "#7355dd",
+      "pct": 2.533100809828154
+    },
+    {
+      "name": "CSS",
+      "size": 102363,
+      "color": "#663399",
+      "pct": 1.62005197118747
+    },
+    {
+      "name": "Other",
+      "size": 49758,
+      "color": "#94a3b8",
+      "pct": 0.7874969078900201
+    }
+  ]
+}
