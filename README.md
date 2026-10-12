@@ -1,8 +1,4 @@
 <div align="center">
-  <picture><img width="640" alt="Safa — Full-stack developer. Web applications, real-time systems and AI tools." src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/profile-intro.svg" /></picture>
-</div>
-
-<div align="center">
   <picture><img height="190" alt="GitHub Stats" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-stats-water.svg" /></picture>
   <picture><img height="190" alt="Most Used Languages" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/top-langs-water.svg" /></picture>
 </div>
