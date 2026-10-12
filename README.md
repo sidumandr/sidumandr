@@ -30,9 +30,10 @@
   <picture><img height="32" alt=".NET" title=".NET" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/dotnetcore/dotnetcore-original.svg" /></picture>&nbsp;
   <picture><img height="32" alt="Python" title="Python" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/python/python-original.svg" /></picture>&nbsp;
   <picture><img height="32" alt="PostgreSQL" title="PostgreSQL" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/postgresql/postgresql-original.svg" /></picture>&nbsp;
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://cdn.simpleicons.org/prisma/white" /><source media="(prefers-color-scheme: light)" srcset="https://cdn.simpleicons.org/prisma/24292f" /><img height="32" alt="Prisma" title="Prisma" src="https://cdn.simpleicons.org/prisma/24292f" /></picture>&nbsp;
   <picture><img height="32" alt="Redis" title="Redis" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/redis/redis-original.svg" /></picture>&nbsp;
   <picture><img height="32" alt="Docker" title="Docker" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/docker/docker-original.svg" /></picture>&nbsp;
-  <picture><img height="32" alt="GitHub Actions" title="GitHub Actions" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/githubactions/githubactions-original.svg" /></picture>&nbsp;
+  <picture><img height="32" alt="Git" title="Git" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/git/git-original.svg" /></picture>&nbsp;
 </div>
 
 <br />
