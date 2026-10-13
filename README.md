@@ -1,9 +1,7 @@
 <div align="center">
-  <picture><img height="190" alt="GitHub Stats" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-stats-water.svg" /></picture>
-  <picture><img height="190" alt="Most Used Languages" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/top-langs-water.svg" /></picture>
+  <picture><img height="190" alt="GitHub Stats" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-stats-auto.svg" /></picture>
+  <picture><img height="190" alt="Languages — manually selected distribution" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/profile-languages.svg" /></picture>
 </div>
-<p align="center"><sub>Commits: last 12 months · PRs: manual · Languages: accessible, owned non-fork repos</sub></p>
-
 <div align="center">
   <picture><img height="32" alt="JavaScript" title="JavaScript" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/javascript/javascript-original.svg" /></picture>&nbsp;
   <picture><img height="32" alt="TypeScript" title="TypeScript" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/typescript/typescript-original.svg" /></picture>&nbsp;
@@ -33,3 +31,4 @@
 <p align="center"><a href="https://github.com/sidumandr/cinapil">Cinapil</a> · <a href="https://cinapil.vercel.app">Demo</a> &nbsp; / &nbsp; <a href="https://github.com/sidumandr/siduschat">SidusChat</a> &nbsp; / &nbsp; <a href="https://github.com/sidumandr/MessaLM">MessaLM</a></p>
 
 </details>
+
