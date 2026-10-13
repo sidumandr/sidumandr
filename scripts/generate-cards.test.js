@@ -12,7 +12,10 @@ test('PR counts use direct connections and include all pages',async()=>{
   throw new Error('Unexpected query');
  };
  const d=await fetchData(api,new Date('2026-10-09T00:00:00Z'));
- assert.equal(d.prs.authored,3);assert.equal(d.prs.external,1);assert.equal(d.prs.open+d.prs.merged+d.prs.closed,3);assert.equal(pages,2);assert.equal(d.stats.totalPullRequestContributions,2);
+ assert.equal(d.prs.authored,3);assert.equal(d.prs.external,1);assert.equal(d.prs.open+d.prs.merged+d.prs.closed,3);assert.equal(pages,2);assert.equal(d.stats.totalPullRequestContributions,2);assert.deepEqual(d.langs.map(l=>l.name),['TypeScript','C#','Python','CSS','JavaScript']);assert.equal(d.langs.reduce((sum,l)=>sum+l.pct,0),100);
 });
 test('invalid cursor fails instead of truncating data',async()=>{await assert.rejects(()=>paginate(async()=>({nodes:[],pageInfo:{hasNextPage:true,endCursor:null}})),/cursor/);});
-test('manual profile PR value survives API updates',()=>{const d=mock();d.prs.authored=1234;assert.ok(render(d)['github-stats.svg'].includes('>24</text>'));});
+test('profile PR contributions come from live API data',()=>{const d=mock();d.stats.totalPullRequestContributions=1234;const svg=render(d)['github-stats.svg'];assert.ok(svg.includes('>1,234</text>'));assert.ok(svg.includes('Yearly PRs'));assert.ok(!svg.includes('manually set to 24'));});
+
+test('manual language distribution is disclosed',async()=>{ const d=mock(); const svg=render(d)['profile-languages.svg'];assert.ok(svg.includes('Manually selected display distribution'));});
+
