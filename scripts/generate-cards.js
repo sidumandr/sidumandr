@@ -2,8 +2,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const USERNAME = process.env.PROFILE_USERNAME || 'sidumandr';
 const OUT = process.env.OUT_DIR || 'dist';
-// User-selected manual PR count for the main profile card.
-const PROFILE_PR_COUNT = 24;
+// User-selected display distribution; these percentages are not GitHub language statistics.
+const PROFILE_LANGUAGES = [
+  {name:'TypeScript',pct:55,color:'#3178c6'},
+  {name:'C#',pct:22,color:'#7355dd'},
+  {name:'Python',pct:12,color:'#3572A5'},
+  {name:'CSS',pct:7,color:'#663399'},
+  {name:'JavaScript',pct:4,color:'#f1e05a'},
+];
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
 const number = n => Number(n).toLocaleString('en-US');
 const PAGE = 'pageInfo{hasNextPage endCursor}';
@@ -41,11 +47,7 @@ async function fetchData(api=graphql, now=new Date()) {
   const from=new Date(now); from.setUTCFullYear(from.getUTCFullYear()-1);
   const base=await api(`query($login:String!,$from:DateTime!,$to:DateTime!){user(login:$login){login authored:pullRequests(first:1){totalCount} prOpen:pullRequests(first:1,states:[OPEN]){totalCount} prMerged:pullRequests(first:1,states:[MERGED]){totalCount} prClosed:pullRequests(first:1,states:[CLOSED]){totalCount} followers{totalCount} following{totalCount} contributionsCollection(from:$from,to:$to){totalCommitContributions totalIssueContributions totalPullRequestContributions totalPullRequestReviewContributions restrictedContributionsCount startedAt endedAt} repositoriesContributedTo(first:1,includeUserRepositories:false,contributionTypes:[COMMIT,ISSUE,PULL_REQUEST,PULL_REQUEST_REVIEW]){totalCount}}}`,{login:USERNAME,from:from.toISOString(),to:now.toISOString()});
   if(!base.user) throw new Error('GitHub user not found');
-  const repos=await paginate(async cursor => (await api(`query($login:String!,$cursor:String){user(login:$login){repositories(first:50,after:$cursor,ownerAffiliations:[OWNER]){nodes{id isFork stargazerCount forkCount languages(first:100){edges{size node{name color}} ${PAGE}} pullRequests(first:1){totalCount} open:pullRequests(first:1,states:[OPEN]){totalCount} merged:pullRequests(first:1,states:[MERGED]){totalCount} closed:pullRequests(first:1,states:[CLOSED]){totalCount}} ${PAGE}}}}`,{login:USERNAME,cursor})).user.repositories);
-  for(const repo of repos) if(repo.languages.pageInfo.hasNextPage) {
-    const more=await paginate(async cursor => { const page=(await api(`query($id:ID!,$cursor:String){node(id:$id){... on Repository{languages(first:100,after:$cursor){nodes{name color} edges{size node{name color}} ${PAGE}}}}}`,{id:repo.id,cursor:cursor || repo.languages.pageInfo.endCursor})).node.languages; return {...page,nodes:page.edges}; });
-    repo.languages.edges.push(...more);
-  }
+  const repos=await paginate(async cursor => (await api(`query($login:String!,$cursor:String){user(login:$login){repositories(first:50,after:$cursor,ownerAffiliations:[OWNER]){nodes{id isFork stargazerCount forkCount pullRequests(first:1){totalCount} open:pullRequests(first:1,states:[OPEN]){totalCount} merged:pullRequests(first:1,states:[MERGED]){totalCount} closed:pullRequests(first:1,states:[CLOSED]){totalCount}} ${PAGE}}}}`,{login:USERNAME,cursor})).user.repositories);
   // Direct PR connections avoid search-index visibility discrepancies.
   const authoredPRs=await paginate(async cursor => (await api(`query($login:String!,$cursor:String){user(login:$login){pullRequests(first:100,after:$cursor){nodes{repository{owner{login}}} ${PAGE}}}}`,{login:USERNAME,cursor})).user.pullRequests);
   const issueData=await api(`query($login:String!){user(login:$login){issues(first:1){totalCount}}}`,{login:USERNAME});
@@ -54,7 +56,7 @@ async function fetchData(api=graphql, now=new Date()) {
   console.log(`PRs (token-visible): ${authored.authored} authored, ${authored.open} open, ${authored.merged} merged, ${authored.closed} closed; last-12-month contributions: ${base.user.contributionsCollection.totalPullRequestContributions}`);
   const owned={total:0,open:0,merged:0,closed:0};
   for(const r of repos){owned.total+=r.pullRequests.totalCount; for(const k of ['open','merged','closed']) owned[k]+=r[k].totalCount;}
-  return {username:base.user.login,updatedAt:now.toISOString(),scope:'Token-visible data',stats:{stars:repos.filter(r=>!r.isFork).reduce((s,r)=>s+r.stargazerCount,0),repos:repos.length,originals:repos.filter(r=>!r.isFork).length,forks:repos.filter(r=>r.isFork).length,followers:base.user.followers.totalCount,following:base.user.following.totalCount,contributed:base.user.repositoriesContributedTo.totalCount,issues:authored.issues,...base.user.contributionsCollection},prs:{...authored,owned},langs:languageTotals(repos)};
+  return {username:base.user.login,updatedAt:now.toISOString(),scope:'Token-visible data',stats:{stars:repos.filter(r=>!r.isFork).reduce((s,r)=>s+r.stargazerCount,0),repos:repos.length,originals:repos.filter(r=>!r.isFork).length,forks:repos.filter(r=>r.isFork).length,followers:base.user.followers.totalCount,following:base.user.following.totalCount,contributed:base.user.repositoriesContributedTo.totalCount,issues:authored.issues,...base.user.contributionsCollection},prs:{...authored,owned},langs:PROFILE_LANGUAGES,languageSource:'manual'};
 }
 function text(x,y,value,cls='label',extra=''){return `<text x="${x}" y="${y}" class="${cls}" ${extra}>${esc(value)}</text>`;}
 function liquidSurface(w,h) {
@@ -75,20 +77,21 @@ function profileSections(){
 }
 function render(d){
  const s=d.stats,p=d.prs;
- const stats=frame('GitHub Stats','Commits: last 12 months; PR count manually set to 24',grid([['Stars',s.stars],['Yearly Commits',s.totalCommitContributions],['Pull Requests',PROFILE_PR_COUNT],['Issues Authored',s.issues],['Repositories',s.repos],['Contributed to',s.contributed]]),d);
+ const stats=frame('GitHub Stats','Commits and PR contributions: last 12 months',grid([['Stars',s.stars],['Yearly Commits',s.totalCommitContributions],['Yearly PRs',s.totalPullRequestContributions],['Issues Authored',s.issues],['Repositories',s.repos],['Contributed to',s.contributed]]),d);
  const prs=frame('Pull Requests','Lifetime · authored PRs',grid([['Authored',p.authored],['Open',p.open],['Merged',p.merged],['Closed · unmerged',p.closed],['External authored',p.external],['In owned repos³',p.owned.total]]),d);
  const activity=frame('Contributions','Last 12 months',grid([['Commits',s.totalCommitContributions],['PR contributions',s.totalPullRequestContributions],['PR reviews',s.totalPullRequestReviewContributions],['Issue contributions',s.totalIssueContributions],['External repos¹',s.contributed],['Restricted²',s.restrictedContributionsCount]]),d);
  // Official language colors come from GitHub's Language.color field.
  let x=24;const gap=3,usable=312-gap*Math.max(0,d.langs.length-1);
  const bar=d.langs.map((l,i)=>{const width=usable*l.pct/100;const r=`<rect x="${x.toFixed(3)}" y="66" width="${width.toFixed(3)}" height="6" rx="3" fill="${esc(l.color || '#94a3b8')}"/>`;x+=width+gap;return r;}).join('');
  const legend=d.langs.map((l,i)=>{const lx=24+i%2*164,ly=103+Math.floor(i/2)*26;const name=l.name.length>13?l.name.slice(0,12)+'…':l.name;return `<g><title>${esc(l.name)}: ${l.pct.toFixed(1)}%</title><circle cx="${lx+4}" cy="${ly-4}" r="3.5" fill="${esc(l.color || '#94a3b8')}"/>${text(lx+14,ly,name,'name')}${text(lx+148,ly,l.pct.toFixed(1)+'%','label','text-anchor="end"')}</g>`;}).join('');
- const langs=frame('Most Used Languages','Code bytes · non-fork repos',`<rect x="24" y="66" width="312" height="6" rx="3" fill="#161b22"/>`+bar+(legend||text(24,104,'No language data available.')),d,360);
- return {...profileSections(),'github-stats.svg':stats,'pull-requests.svg':prs,'activity.svg':activity,'top-langs.svg':langs,'github-stats-glass.svg':stats,'top-langs-glass.svg':langs,'github-stats-liquid.svg':stats,'top-langs-liquid.svg':langs,'github-stats-liquid-clean.svg':stats,'top-langs-liquid-clean.svg':langs,'github-stats-water.svg':stats,'top-langs-water.svg':langs};
+ const langs=frame('Languages','Manually selected display distribution',`<rect x="24" y="66" width="312" height="6" rx="3" fill="#161b22"/>`+bar+(legend||text(24,104,'No language data available.')),d,360);
+ return {...profileSections(),'github-stats.svg':stats,'pull-requests.svg':prs,'activity.svg':activity,'top-langs.svg':langs,'github-stats-glass.svg':stats,'top-langs-glass.svg':langs,'github-stats-liquid.svg':stats,'top-langs-liquid.svg':langs,'github-stats-liquid-clean.svg':stats,'top-langs-liquid-clean.svg':langs,'github-stats-water.svg':stats,'top-langs-water.svg':langs,'github-stats-auto.svg':stats,'profile-languages.svg':langs};
 }
 function mock(){return {username:USERNAME,updatedAt:'2026-10-09T12:00:00.000Z',scope:'DEMO · sample data',stats:{stars:128,repos:112,originals:96,forks:16,followers:42,following:18,issues:21,contributed:8,totalCommitContributions:734,totalPullRequestContributions:56,totalPullRequestReviewContributions:32,totalIssueContributions:14,restrictedContributionsCount:0},prs:{authored:86,open:8,merged:70,closed:8,external:19,owned:{total:124,open:12,merged:104,closed:8}},langs:[{name:'TypeScript',size:860,color:'#3178c6',pct:86},{name:'JavaScript',size:65,color:'#f1e05a',pct:6.5},{name:'C#',size:25,color:'#178600',pct:2.5},{name:'CSS',size:25,color:'#563d7c',pct:2.5},{name:'Python',size:15,color:'#3572A5',pct:1.5},{name:'Other',size:10,color:'#94a3b8',pct:1}]};}
 async function main(){if(process.env.GITHUB_ACTIONS==='true' && process.env.MOCK==='1') throw new Error('Demo data is not allowed in the production profile workflow');const d=process.env.MOCK==='1'?mock():await fetchData();fs.mkdirSync(OUT,{recursive:true});for(const [name,svg] of Object.entries(render(d)))fs.writeFileSync(path.join(OUT,name),svg);fs.writeFileSync(path.join(OUT,'stats.json'),JSON.stringify(d,null,2));console.log(`Generated cards in ${OUT}${process.env.MOCK==='1'?' (DEMO)':''}`);}
 if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
 module.exports={paginate,languageTotals,render,fetchData,graphql,mock};
+
 
 
 
