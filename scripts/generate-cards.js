@@ -7,8 +7,8 @@ const PROFILE_LANGUAGES = [
   {name:'TypeScript',pct:54.73,color:'#3178c6'},
   {name:'C#',pct:21.86,color:'#7355dd'},
   {name:'Python',pct:11.92,color:'#3572A5'},
-  {name:'CSS',pct:6.74,color:'#D8A7B1'},
-  {name:'JavaScript',pct:3.81,color:'#f1e05a'},
+  {name:'CSS',pct:3.81,color:'#D8A7B1'},
+  {name:'JavaScript',pct:6.74,color:'#f1e05a'},
   {name:'Other',pct:0.94,color:'#94a3b8'},
 ];
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
@@ -86,7 +86,7 @@ function render(d){
  const bar=d.langs.map((l,i)=>{const width=usable*l.pct/100;const r=`<rect x="${x.toFixed(3)}" y="66" width="${width.toFixed(3)}" height="6" rx="3" fill="${esc(l.color || '#94a3b8')}"/>`;x+=width+gap;return r;}).join('');
  const legend=d.langs.map((l,i)=>{const lx=24+i%2*164,ly=103+Math.floor(i/2)*26;const name=l.name.length>13?l.name.slice(0,12)+'…':l.name;return `<g><title>${esc(l.name)}: ${l.pct.toFixed(2)}%</title><circle cx="${lx+4}" cy="${ly-4}" r="3.5" fill="${esc(l.color || '#94a3b8')}"/>${text(lx+14,ly,name,'name')}${text(lx+148,ly,l.pct.toFixed(2)+'%','label','text-anchor="end"')}</g>`;}).join('');
  const langs=frame('Languages','Manually selected display distribution',`<rect x="24" y="66" width="312" height="6" rx="3" fill="#161b22"/>`+bar+(legend||text(24,104,'No language data available.')),d,360);
- return {...profileSections(),'github-stats.svg':stats,'pull-requests.svg':prs,'activity.svg':activity,'top-langs.svg':langs,'github-stats-glass.svg':stats,'top-langs-glass.svg':langs,'github-stats-liquid.svg':stats,'top-langs-liquid.svg':langs,'github-stats-liquid-clean.svg':stats,'top-langs-liquid-clean.svg':langs,'github-stats-water.svg':stats,'top-langs-water.svg':langs,'github-stats-auto.svg':stats,'profile-languages.svg':langs,'profile-languages-decimal.svg':langs,'profile-languages-pink.svg':langs};
+ return {...profileSections(),'github-stats.svg':stats,'pull-requests.svg':prs,'activity.svg':activity,'top-langs.svg':langs,'github-stats-glass.svg':stats,'top-langs-glass.svg':langs,'github-stats-liquid.svg':stats,'top-langs-liquid.svg':langs,'github-stats-liquid-clean.svg':stats,'top-langs-liquid-clean.svg':langs,'github-stats-water.svg':stats,'top-langs-water.svg':langs,'github-stats-auto.svg':stats,'profile-languages.svg':langs,'profile-languages-decimal.svg':langs,'profile-languages-pink.svg':langs,'profile-languages-js.svg':langs};
 }
 function mock(){return {username:USERNAME,updatedAt:'2026-10-09T12:00:00.000Z',scope:'DEMO · sample data',stats:{stars:128,repos:112,originals:96,forks:16,followers:42,following:18,issues:21,contributed:8,totalCommitContributions:734,totalPullRequestContributions:56,totalPullRequestReviewContributions:32,totalIssueContributions:14,restrictedContributionsCount:0},prs:{authored:86,open:8,merged:70,closed:8,external:19,owned:{total:124,open:12,merged:104,closed:8}},langs:[{name:'TypeScript',size:860,color:'#3178c6',pct:86},{name:'JavaScript',size:65,color:'#f1e05a',pct:6.5},{name:'C#',size:25,color:'#178600',pct:2.5},{name:'CSS',size:25,color:'#563d7c',pct:2.5},{name:'Python',size:15,color:'#3572A5',pct:1.5},{name:'Other',size:10,color:'#94a3b8',pct:1}]};}
 async function main(){if(process.env.GITHUB_ACTIONS==='true' && process.env.MOCK==='1') throw new Error('Demo data is not allowed in the production profile workflow');const d=process.env.MOCK==='1'?mock():await fetchData();fs.mkdirSync(OUT,{recursive:true});for(const [name,svg] of Object.entries(render(d)))fs.writeFileSync(path.join(OUT,name),svg);fs.writeFileSync(path.join(OUT,'stats.json'),JSON.stringify(d,null,2));console.log(`Generated cards in ${OUT}${process.env.MOCK==='1'?' (DEMO)':''}`);}
