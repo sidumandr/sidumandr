@@ -1,6 +1,6 @@
 <div align="center">
   <picture><img height="190" alt="GitHub Stats" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-stats-auto.svg" /></picture>
-  <picture><img height="190" alt="Languages — manually selected distribution" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/profile-languages.svg" /></picture>
+  <picture><img height="190" alt="Languages — manually selected distribution" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/profile-languages-pink.svg" /></picture>
 </div>
 <div align="center">
   <picture><img height="32" alt="JavaScript" title="JavaScript" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/javascript/javascript-original.svg" /></picture>&nbsp;
