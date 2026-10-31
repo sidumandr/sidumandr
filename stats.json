@@ -1,0 +1,69 @@
+{
+  "username": "sidumandr",
+  "updatedAt": "2026-10-31T14:49:54.873Z",
+  "scope": "Token-visible data",
+  "stats": {
+    "stars": 1,
+    "repos": 91,
+    "originals": 88,
+    "forks": 3,
+    "followers": 3,
+    "following": 8,
+    "contributed": 1,
+    "issues": 0,
+    "totalCommitContributions": 1542,
+    "totalIssueContributions": 0,
+    "totalPullRequestContributions": 28,
+    "totalPullRequestReviewContributions": 0,
+    "restrictedContributionsCount": 0,
+    "startedAt": "2025-10-31T14:49:54Z",
+    "endedAt": "2026-10-31T14:49:54Z"
+  },
+  "prs": {
+    "authored": 0,
+    "open": 0,
+    "merged": 0,
+    "closed": 0,
+    "external": 0,
+    "issues": 0,
+    "owned": {
+      "total": 0,
+      "open": 0,
+      "merged": 0,
+      "closed": 0
+    }
+  },
+  "langs": [
+    {
+      "name": "TypeScript",
+      "pct": 54.73,
+      "color": "#3178c6"
+    },
+    {
+      "name": "C#",
+      "pct": 21.86,
+      "color": "#7355dd"
+    },
+    {
+      "name": "Python",
+      "pct": 11.92,
+      "color": "#3572A5"
+    },
+    {
+      "name": "CSS",
+      "pct": 3.81,
+      "color": "#D8A7B1"
+    },
+    {
+      "name": "JavaScript",
+      "pct": 6.74,
+      "color": "#f1e05a"
+    },
+    {
+      "name": "Other",
+      "pct": 0.94,
+      "color": "#94a3b8"
+    }
+  ],
+  "languageSource": "manual"
+}
