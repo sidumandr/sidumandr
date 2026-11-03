@@ -6,7 +6,7 @@ on:
   workflow_dispatch:          # elle çalıştırılabilsin
   push:
     branches: [main]
-    paths: [.github/workflows/3d-contrib.yml]
+    paths: [.github/workflows/3d-contrib.yml, .github/profile-3d-settings.json]
 
 permissions:
   contents: write
@@ -27,6 +27,8 @@ jobs:
           # Private katkıları da sayabilmesi için kişisel token (PROFILE_TOKEN secret'ı)
           GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN }}
           USERNAME: ${{ github.repository_owner }}
+          # Şeffaf arka plan + açık/koyu tema renkleri
+          SETTING_JSON: .github/profile-3d-settings.json
 
       - name: Commit
         run: |
