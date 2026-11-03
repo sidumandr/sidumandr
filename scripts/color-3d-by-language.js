@@ -54,8 +54,9 @@ async function fetchDailyLanguages(api=graphql) {
     for(const [key,bucket] of [['commitContributionsByRepository','commits'],['pullRequestContributionsByRepository','other'],['issueContributionsByRepository','other'],['pullRequestReviewContributionsByRepository','other']]) for(const repo of c[key]) {
       if(repo.contributions.pageInfo.hasNextPage) throw new Error(`${key}: more than 100 days in one window; lower WINDOW_DAYS`);
       for(const node of repo.contributions.nodes) {
+        if(!node) continue; // not visible to this token
         const date=node.occurredAt.slice(0,10);
-        if(date>=start && date<=end) add(bucket,date,repo.repository.primaryLanguage?.color,node.commitCount ?? 1);
+        if(date>=start && date<=end) add(bucket,date,repo.repository?.primaryLanguage?.color,node.commitCount ?? 1);
       }
     }
   }
