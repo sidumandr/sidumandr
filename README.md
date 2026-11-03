@@ -1,6 +1,8 @@
 <div align="center">
-  <picture><img height="190" alt="GitHub Stats" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/github-stats-auto.svg" /></picture>
-  <picture><img height="190" alt="Languages — manually selected distribution" src="https://raw.githubusercontent.com/sidumandr/sidumandr/output/profile-languages-js.svg" /></picture>
+  <img width="480" alt="GitHub metrics" src="https://raw.githubusercontent.com/sidumandr/sidumandr/main/metrics.svg" />
+</div>
+<div align="center">
+  <img width="800" alt="3D contribution calendar" src="https://raw.githubusercontent.com/sidumandr/sidumandr/main/profile-3d-contrib/profile-season-animate.svg" />
 </div>
 <div align="center">
   <picture><img height="32" alt="JavaScript" title="JavaScript" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/javascript/javascript-original.svg" /></picture>&nbsp;
