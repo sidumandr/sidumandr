@@ -1,0 +1,54 @@
+name: Metrics
+
+on:
+  schedule:
+    - cron: "0 3 * * *"       # her gün 06:00 (TR) güncelle
+  workflow_dispatch:          # elle çalıştırılabilsin
+  push:
+    branches: [main]
+    paths: [.github/workflows/metrics.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: metrics
+  cancel-in-progress: false
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      # lowlighter/metrics: https://github.com/lowlighter/metrics
+      - uses: lowlighter/metrics@latest
+        with:
+          # Private repoları da görebilmesi için kişisel token (PROFILE_TOKEN secret'ı)
+          token: ${{ secrets.PROFILE_TOKEN }}
+          committer_token: ${{ secrets.GITHUB_TOKEN }}
+          filename: metrics.svg
+          user: ${{ github.repository_owner }}
+          template: classic
+          base: header, activity, community, repositories, metadata
+          config_timezone: Europe/Istanbul
+          config_octicon: yes
+          plugin_isocalendar: yes
+          plugin_isocalendar_duration: full-year
+          plugin_languages: yes
+          plugin_languages_details: bytes-size, percentage
+          plugin_languages_limit: 8
+          plugin_languages_sections: most-used, recently-used
+          plugin_languages_recent_load: 300
+          plugin_languages_recent_days: 30
+          plugin_habits: yes
+          plugin_habits_from: 200
+          plugin_habits_days: 30
+          plugin_habits_facts: yes
+          plugin_habits_charts: yes
+          plugin_lines: yes
+          plugin_lines_sections: base
+          plugin_achievements: yes
+          plugin_achievements_display: compact
+          plugin_achievements_threshold: C
+          plugin_notable: yes
+          plugin_stars: yes
+          plugin_stars_limit: 3
