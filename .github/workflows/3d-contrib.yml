@@ -6,7 +6,7 @@ on:
   workflow_dispatch:          # elle çalıştırılabilsin
   push:
     branches: [main]
-    paths: [.github/workflows/3d-contrib.yml, .github/profile-3d-settings.json]
+    paths: [.github/workflows/3d-contrib.yml, .github/profile-3d-settings.json, scripts/color-3d-by-language.js]
 
 permissions:
   contents: write
@@ -29,6 +29,16 @@ jobs:
           USERNAME: ${{ github.repository_owner }}
           # Şeffaf arka plan + açık/koyu tema renkleri
           SETTING_JSON: .github/profile-3d-settings.json
+
+      # Her günün bloğunu o günkü commit dillerinin oranına göre tek renge boya
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: node --test scripts/color-3d-by-language.test.js
+      - run: node scripts/color-3d-by-language.js profile-3d-contrib/profile-transparent.svg
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN }}
+          PROFILE_USERNAME: ${{ github.repository_owner }}
 
       - name: Commit
         run: |
