@@ -1,8 +1,8 @@
 <div align="center">
-  <img width="480" alt="GitHub metrics" src="https://raw.githubusercontent.com/sidumandr/sidumandr/main/metrics.svg" />
+  <img width="800" alt="3D contribution calendar" src="https://raw.githubusercontent.com/sidumandr/sidumandr/main/profile-3d-contrib/profile-season-animate.svg" />
 </div>
 <div align="center">
-  <img width="800" alt="3D contribution calendar" src="https://raw.githubusercontent.com/sidumandr/sidumandr/main/profile-3d-contrib/profile-season-animate.svg" />
+  <img width="480" alt="GitHub metrics" src="https://raw.githubusercontent.com/sidumandr/sidumandr/main/metrics.svg" />
 </div>
 <div align="center">
   <picture><img height="32" alt="JavaScript" title="JavaScript" src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/javascript/javascript-original.svg" /></picture>&nbsp;
