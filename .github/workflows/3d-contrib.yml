@@ -1,0 +1,38 @@
+name: 3D contributions
+
+on:
+  schedule:
+    - cron: "30 3 * * *"      # her gün 06:30 (TR) güncelle
+  workflow_dispatch:          # elle çalıştırılabilsin
+  push:
+    branches: [main]
+    paths: [.github/workflows/3d-contrib.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: 3d-contrib
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      # yoshi389111/github-profile-3d-contrib: 3D takvim + radar + dil grafiği
+      - uses: yoshi389111/github-profile-3d-contrib@latest
+        env:
+          # Private katkıları da sayabilmesi için kişisel token (PROFILE_TOKEN secret'ı)
+          GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN }}
+          USERNAME: ${{ github.repository_owner }}
+
+      - name: Commit
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -A profile-3d-contrib
+          git diff --cached --quiet || git commit -m "Update 3D contribution chart"
+          git pull --rebase origin main
+          git push

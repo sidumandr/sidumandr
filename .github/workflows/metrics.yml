@@ -31,8 +31,6 @@ jobs:
           base: header, activity, community, repositories, metadata
           config_timezone: Europe/Istanbul
           config_octicon: yes
-          plugin_isocalendar: yes
-          plugin_isocalendar_duration: full-year
           plugin_languages: yes
           plugin_languages_details: bytes-size, percentage
           plugin_languages_limit: 8
